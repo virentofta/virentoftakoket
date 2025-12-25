@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h2>Profiler</h2>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <a class="btn ghost" href="/admin?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+</div>
+
+<div class="card recipe-form">
+  <h3>Skapa ny profil</h3>
+  <form class="form-grid" method="post" action="/admin/profiles/new" enctype="multipart/form-data">
+    <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+    <label class="field">
+      <span class="label">Namn</span>
+      <input type="text" name="name" required placeholder="Namn" />
+    </label>
+    <label class="field">
+      <span class="label">E-post</span>
+      <input type="email" name="email" placeholder="epost@example.com" />
+    </label>
+    <label class="field">
+      <span class="label">Avatar-bild</span>
+      <input type="file" name="avatar_file" accept="image/*" />
+    </label>
+    <div class="form-actions">
+      <button class="btn primary" type="submit">Lägg till</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Befintliga profiler</h3>
+  <div class="grid two">
+    {% for p in profiles %}
+      <form class="card recipe-form" method="post" action="/admin/profiles/update" enctype="multipart/form-data">
+        <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+        <input type="hidden" name="target_profile_id" value="{{ p.id }}" />
+        <div class="form-grid">
+          <label class="field">
+            <span class="label">Namn</span>
+            <input type="text" name="name" required value="{{ p.name }}" />
+          </label>
+          <label class="field">
+            <span class="label">E-post</span>
+            <input type="email" name="email" value="{{ p.email or '' }}" />
+          </label>
+          <label class="field">
+            <span class="label">Ny avatar-bild</span>
+            <input type="file" name="avatar_file" accept="image/*" />
+            {% if p.avatar_url %}
+              <small class="muted">Nuvarande: <a href="{{ p.avatar_url }}" target="_blank">visa</a></small>
+            {% endif %}
+          </label>
+        </div>
+        <div class="form-actions">
+          <span class="muted small">ID: {{ p.id }}</span>
+          <button class="btn primary" type="submit">Spara</button>
+        </div>
+      </form>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

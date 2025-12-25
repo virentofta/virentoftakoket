@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h2>DB-inspektion</h2>
+    <p class="muted">Visa poster och ta bort vid behov.</p>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <div class="action-row">
+    <a class="btn ghost" href="/admin?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+    <a class="btn primary" href="/admin/backup?profile_id={{ current_profile.id if current_profile else '' }}">Ladda ned backup (zip)</a>
+  </div>
+</div>
+
+<section class="card">
+  <h3>Recept (alla profiler)</h3>
+  <div class="table" style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Titel</th>
+          <th>Profil</th>
+          <th>Arkiverad</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in recipes %}
+          <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.title }}</td>
+            <td>{{ r.created_by or '-' }}</td>
+            <td>{{ 'Ja' if r.archived else 'Nej' }}</td>
+            <td>
+              <form method="post" action="/admin/db/delete-recipe" onsubmit="return confirm('Ta bort receptet och relaterade ingredienser/steg?');">
+                <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+                <input type="hidden" name="recipe_id" value="{{ r.id }}" />
+                <button class="btn danger" type="submit">Ta bort</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h3>Menyrader</h3>
+  <div class="table" style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Profil</th>
+          <th>Vecka</th>
+          <th>År</th>
+          <th>Dag</th>
+          <th>Recipe ID</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in menu_entries %}
+          <tr>
+            <td>{{ m.id }}</td>
+            <td>{{ m.profile_id }}</td>
+            <td>{{ m.week_number or '-' }}</td>
+            <td>{{ m.year or '-' }}</td>
+            <td>{{ m.day }}</td>
+            <td>{{ m.recipe_id or '-' }}</td>
+            <td>
+              <form method="post" action="/admin/db/delete-menu-entry" onsubmit="return confirm('Ta bort denna menyrad?');">
+                <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+                <input type="hidden" name="entry_id" value="{{ m.id }}" />
+                <button class="btn danger" type="submit">Ta bort</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h3>Inköpslista</h3>
+  <div class="table" style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Profil</th>
+          <th>Namn</th>
+          <th>Mängd</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in shopping_items %}
+          <tr>
+            <td>{{ s.id }}</td>
+            <td>{{ s.profile_id }}</td>
+            <td>{{ s.name }}</td>
+            <td>{{ s.amount or '-' }}</td>
+            <td>
+              <form method="post" action="/admin/db/delete-shopping-item" onsubmit="return confirm('Ta bort denna rad?');">
+                <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+                <input type="hidden" name="item_id" value="{{ s.id }}" />
+                <button class="btn danger" type="submit">Ta bort</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

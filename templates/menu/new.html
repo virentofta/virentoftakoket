@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Veckomeny</p>
+    <h2>Skapa veckomeny</h2>
+    <p class="muted">Välj vecka, ansvarig och lägg till upp till 7 recept.</p>
+  </div>
+  <a class="btn ghost" href="/menu?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+</div>
+
+<form id="new-menu-search" class="card recipe-form" method="get" action="/menu/new">
+  <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+  <div class="form-grid">
+    <label class="field">
+      <span class="label">Vecka</span>
+      <select name="week_number" required>
+        {% for w in range(1, 53) %}
+          <option value="{{ w }}" {% if w == current_week %}selected{% endif %}>Vecka {{ w }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span class="label">År</span>
+      <input type="number" name="year" value="{{ current_year }}" min="2023" />
+    </label>
+    <label class="field">
+      <span class="label">Ansvarig</span>
+      <select name="responsible_profile_id" id="responsible-select">
+        <option value="">Ingen</option>
+        {% for p in profiles %}
+          <option value="{{ p.id }}" {% if responsible and p.id == responsible.id %}selected{% endif %}>{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="field full">
+      <span class="label">Sök recept</span>
+      <input type="text" name="q" value="{{ search_query }}" placeholder="Sök i titel, ingredienser eller taggar" />
+    </label>
+  </div>
+  <div class="form-actions">
+    <button class="btn primary" type="submit">Uppdatera sökning/inställningar</button>
+  </div>
+</form>
+
+<div class="recipe-cards">
+  {% for recipe in recipes %}
+    <div class="card recipe-card">
+      <label class="card-select">
+        <input type="checkbox" class="recipe-checkbox" value="{{ recipe.id }}" />
+        <span></span>
+      </label>
+      <a class="card-link" href="/recipes/{{ recipe.id }}?profile_id={{ current_profile.id if current_profile else '' }}">
+        <div class="card-thumb {{ 'has-image' if recipe.image_url else 'empty' }}" {% if recipe.image_url %}style="background-image: url('{{ recipe.image_url }}')" {% endif %}></div>
+        <div class="card-body">
+          <h3>{{ recipe.title }}</h3>
+        </div>
+      </a>
+    </div>
+  {% else %}
+    <article class="card">
+      <h3>Inga recept hittades</h3>
+    </article>
+  {% endfor %}
+</div>
+
+<form class="action-row" method="post" action="/menu/create" style="margin-top: var(--space);">
+  <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+  <input type="hidden" name="week_number" value="{{ current_week }}" />
+  <input type="hidden" name="year" value="{{ current_year }}" />
+  <input type="hidden" name="responsible_profile_id" id="responsible-hidden" value="{{ responsible.id if responsible else '' }}" />
+  <input type="hidden" name="recipe_ids" id="selected-recipes" value="" />
+  <button class="btn primary" type="submit" id="create-menu-btn" disabled>Spara veckomeny</button>
+</form>
+{% endblock %}

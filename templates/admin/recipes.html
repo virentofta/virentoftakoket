@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h2>Hitta recept</h2>
+    <p class="muted">Sök upp och redigera recept.</p>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <a class="btn ghost" href="/admin?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+</div>
+
+<div class="card admin-search">
+  <form class="search-form" method="get" action="/admin/recipes">
+    <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+    <label class="field full">
+      <span class="label">Sök recept</span>
+      <input type="text" name="q" value="{{ search_query }}" placeholder="Sök i titel, ingredienser eller taggar" />
+    </label>
+    <label class="field">
+      <span class="label">Visa arkiverade</span>
+      <input type="checkbox" name="include_archived" value="1" {% if include_archived %}checked{% endif %} />
+    </label>
+    <div class="form-actions">
+      <button class="btn ghost" type="reset">Rensa</button>
+      <button class="btn primary" type="submit">Sök</button>
+    </div>
+  </form>
+
+  <div class="search-results" data-profile-id="{{ current_profile.id if current_profile else '' }}" data-include-archived="{{ '1' if include_archived else '0' }}">
+    {% if search_results %}
+      <p class="muted small">{{ search_results|length }} träff(ar)</p>
+      <div class="grid two">
+        {% for recipe in search_results %}
+          <article class="card app-card">
+            <div class="card-thumb {{ 'has-image' if recipe.image_url else 'empty' }}" {% if recipe.image_url %}style="background-image: url('{{ recipe.image_url }}')" {% endif %}></div>
+            <div>
+              <p class="muted small">Profil {{ recipe.created_by or current_profile.id }}</p>
+              <h3>{{ recipe.title }}</h3>
+              <p class="small muted">{{ recipe.description or "Ingen beskrivning." }}</p>
+              {% if recipe.servings %}<p class="small muted">Portioner: {{ recipe.servings }}</p>{% endif %}
+              {% if recipe.archived %}<p class="small muted">Status: Arkiverad</p>{% endif %}
+            </div>
+            <div class="result-actions">
+              <a class="btn ghost" href="/recipes/{{ recipe.id }}?profile_id={{ current_profile.id if current_profile else '' }}">Visa</a>
+              <a class="btn primary" href="/admin/edit?recipe_id={{ recipe.id }}&profile_id={{ current_profile.id if current_profile else '' }}">Redigera</a>
+              <form method="post" action="/admin/recipes/archive" style="margin:0;">
+                <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+                <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+                <input type="hidden" name="archived" value="{{ 0 if recipe.archived else 1 }}" />
+                <button class="btn danger" type="submit">{{ "Återställ" if recipe.archived else "Arkivera" }}</button>
+              </form>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">Inga recept att visa.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

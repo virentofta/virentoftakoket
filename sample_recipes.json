@@ -1,0 +1,92 @@
+{
+  "recipes": [
+    {
+      "title": "Omelett",
+      "description": "En enkel och fluffig omelett.",
+      "servings": 1,
+      "created_by": 1,
+      "image_url": null,
+      "ingredients": [
+        { "name": "ägg", "amount": "2 st" },
+        { "name": "mjölk", "amount": "2 msk" },
+        { "name": "smör", "amount": "1 msk" },
+        { "name": "salt", "amount": "1 krm" },
+        { "name": "svartpeppar", "amount": "1 krm" }
+      ],
+      "steps": [
+        "Vispa ihop ägg, mjölk, salt och peppar.",
+        "Smält smör i en varm stekpanna.",
+        "Häll i äggsmeten och låt stelna på medelvärme.",
+        "Vik ihop omeletten och servera."
+      ],
+      "tags": ["enkelt", "frukost", "snabbt"]
+    },
+    {
+      "title": "Pasta carbonara",
+      "description": "Klassisk carbonara utan grädde.",
+      "servings": 4,
+      "created_by": 1,
+      "image_url": null,
+      "ingredients": [
+        { "name": "spaghetti", "amount": "400 g" },
+        { "name": "pancetta", "amount": "150 g" },
+        { "name": "ägg", "amount": "3 st" },
+        { "name": "parmesan", "amount": "1.5 dl" },
+        { "name": "svartpeppar", "amount": "1 tsk" },
+        { "name": "salt", "amount": "1 tsk" }
+      ],
+      "steps": [
+        "Koka pastan al dente i saltat vatten.",
+        "Stek pancetta knaprig.",
+        "Vispa ihop ägg, riven parmesan och peppar.",
+        "Blanda het pasta med pancetta och äggblandning från värmen så att den krämiga såsen bildas.",
+        "Smaka av med peppar och servera direkt."
+      ],
+      "tags": ["pasta", "italienskt", "snabbt"]
+    },
+    {
+      "title": "Löksoppa",
+      "description": "Fransk-inspirerad löksoppa med djup smak.",
+      "servings": 4,
+      "created_by": 1,
+      "image_url": null,
+      "ingredients": [
+        { "name": "gul lök", "amount": "5 st" },
+        { "name": "smör", "amount": "2 msk" },
+        { "name": "olivolja", "amount": "1 msk" },
+        { "name": "timjan", "amount": "1 tsk" },
+        { "name": "vitlök", "amount": "2 klyftor" },
+        { "name": "vitt vin", "amount": "1 dl" },
+        { "name": "grönsaksbuljong", "amount": "1 l" },
+        { "name": "salt", "amount": "1 tsk" },
+        { "name": "svartpeppar", "amount": "1 tsk" }
+      ],
+      "steps": [
+        "Skiva löken tunt och stek långsamt i smör och olivolja tills den karamelliseras.",
+        "Tillsätt vitlök och timjan och fräs kort.",
+        "Häll i vitt vin och låt reducera något.",
+        "Tillsätt buljong och låt sjuda i 15–20 minuter.",
+        "Smaka av med salt och peppar, servera gärna med rostat bröd och ost."
+      ],
+      "tags": ["soppa", "comfort food", "vegetarisk"]
+    },
+    {
+      "title": "Havregrynsgröt",
+      "description": "Klassisk frukostgröt.",
+      "servings": 2,
+      "created_by": 1,
+      "image_url": null,
+      "ingredients": [
+        { "name": "havregryn", "amount": "2 dl" },
+        { "name": "vatten", "amount": "4 dl" },
+        { "name": "salt", "amount": "1 krm" }
+      ],
+      "steps": [
+        "Koka upp vatten och salt.",
+        "Rör i havregrynen och låt småkoka 3–4 minuter under omrörning.",
+        "Servera med valfria tillbehör som bär, äpple och kanel."
+      ],
+      "tags": ["frukost", "gröt", "enkelt"]
+    }
+  ]
+}

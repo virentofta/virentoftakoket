@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h2>Profilinställningar</h2>
+    <p class="muted">Anpassa tema och profiluppgifter.</p>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <a class="btn ghost" href="/admin?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+</div>
+
+<div class="card">
+  <form class="form-grid" method="post" action="/admin/profile-settings" enctype="multipart/form-data">
+    <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+    <label class="field">
+      <span class="label">Välj profil</span>
+      <select name="target_profile_id">
+        {% for p in profiles %}
+          <option value="{{ p.id }}" {% if current_profile and p.id == current_profile.id %}selected{% endif %}>{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span class="label">Namn</span>
+      <input type="text" name="name" value="{{ current_profile.name if current_profile else '' }}" />
+    </label>
+    <label class="field">
+      <span class="label">E-post</span>
+      <input type="email" name="email" value="{{ current_profile.email if current_profile else '' }}" />
+    </label>
+    <label class="field">
+      <span class="label">Avatar-bild</span>
+      <input type="file" name="avatar_file" accept="image/*" />
+      {% if current_profile and current_profile.avatar_url %}
+        <small class="muted">Nuvarande: <a href="{{ current_profile.avatar_url }}" target="_blank">visa</a></small>
+      {% endif %}
+    </label>
+    <fieldset class="field full">
+      <legend class="label">Tema</legend>
+      <div class="chip-row compact">
+        {% for value, label in theme_options %}
+          <label class="chip soft">
+            <input type="radio" name="theme_preference" value="{{ value }}" {% if current_profile and current_profile.theme_preference %}{% if current_profile.theme_preference == value %}checked{% endif %}{% elif value == 'auto' %}checked{% endif %} />
+            <span>{{ label }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      <p class="muted small">"Auto" följer systeminställningen för ljus/mörkt läge. Valet styr hela appens tema för din profil.</p>
+    </fieldset>
+    <div class="form-actions">
+      <button class="btn primary" type="submit">Spara inställningar</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const profileSelect = document.querySelector('select[name="target_profile_id"]');
+  if (profileSelect) {
+    profileSelect.addEventListener("change", (e) => {
+      const id = e.target.value;
+      if (id) {
+        window.location = `/admin/profile-settings?profile_id=${encodeURIComponent(id)}`;
+      }
+    });
+  }
+</script>
+{% endblock %}

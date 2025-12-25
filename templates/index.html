@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero card">
+  <div class="hero-text">
+    <p class="eyebrow">Översikt</p>
+    <h2>{{ subtitle or "Välkommen" }}</h2>
+    <p class="lede">Snabb start för planering och matlagning. Välj en sektion nedan för att fortsätta.</p>
+  </div>
+</section>
+
+<section class="card-grid">
+  <a class="card app-card" href="/recipes?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">📖</div>
+    <div>
+      <h3>Recept</h3>
+      <p>Bygg och bläddra bland favoriter.</p>
+    </div>
+  </a>
+  <a class="card app-card" href="/menu?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">🗓️</div>
+    <div>
+      <h3>Veckomeny</h3>
+      <p>Planera middagarna för veckan.</p>
+    </div>
+  </a>
+  <a class="card app-card" href="/admin?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">⬆️</div>
+    <div>
+      <h3>Admin</h3>
+      <p>Importera recept och verktyg framöver.</p>
+    </div>
+  </a>
+  <a class="card app-card" href="/recipes?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">🧾</div>
+    <div>
+      <h3>Inköpslista</h3>
+      <p>Kommer kopplas till recepten och menyn.</p>
+    </div>
+  </a>
+</section>
+{% endblock %}

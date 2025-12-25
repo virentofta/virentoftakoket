@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h2>Importera recept</h2>
+    <p class="muted">JSON-formatet ska innehålla en lista under nyckeln <code>recipes</code>.</p>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <a class="btn ghost" href="/admin?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+</div>
+
+<div class="card recipe-form">
+  <form class="upload-form" method="post" action="/admin/import" enctype="multipart/form-data">
+    <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+    <label class="input-label" for="file">JSON-fil</label>
+    <input class="file-input" id="file" type="file" name="file" accept="application/json" required />
+    <button class="btn primary" type="submit">Importera</button>
+  </form>
+  <p class="muted small" style="margin-top:8px;">
+    Format: { "recipes": [ { "title": "...", "description": "...", "servings": 4, "created_by": 1, "image_url": "...", "ingredients": [ { "name": "mjölk", "amount": "5 dl" } ], "steps": ["..."], "tags": ["..."] } ] }
+  </p>
+  {% if result %}
+    <p class="muted small" style="margin-top:8px;">Importerat {{ result.imported }} av {{ result.total }} recept.</p>
+  {% endif %}
+</div>
+{% endblock %}

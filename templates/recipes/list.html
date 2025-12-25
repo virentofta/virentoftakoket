@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Samling</p>
+    <h2>Recept</h2>
+    <p class="muted">Hitta favoriter och öppna detaljer.</p>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <div class="action-row">
+    <a class="btn primary" href="/recipes/new?profile_id={{ current_profile.id if current_profile else '' }}">Nytt recept</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: var(--space);">
+  <label class="field full">
+    <span class="label">Sök recept</span>
+    <input type="search" id="recipe-search" placeholder="Börja skriva för att filtrera..." />
+  </label>
+</div>
+
+<div class="grid three recipe-cards">
+  {% for recipe in recipes %}
+    <div class="card recipe-card" data-title="{{ recipe.title | lower }}" data-tags="{{ recipe.tags | join(' ') | lower }}">
+      <a class="card-link" href="/recipes/{{ recipe.id }}?profile_id={{ current_profile.id if current_profile else '' }}">
+        <div class="card-thumb {{ 'has-image' if recipe.image_url else 'empty' }}" {% if recipe.image_url %}style="background-image: url('{{ recipe.image_url }}')" {% endif %}></div>
+        <div class="card-body">
+          <h3>{{ recipe.title }}</h3>
+        </div>
+      </a>
+    </div>
+  {% else %}
+    <article class="card">
+      <h3>Inga recept ännu</h3>
+      <p>Lägg till ditt första recept via API:t eller admin-importen.</p>
+    </article>
+  {% endfor %}
+</div>
+{% endblock %}

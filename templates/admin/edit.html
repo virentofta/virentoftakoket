@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h2>Redigera recept</h2>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <a class="btn ghost" href="/admin?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+</div>
+
+<form class="card recipe-form" method="post" action="/admin/edit" enctype="multipart/form-data">
+  <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+  <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+  <div class="form-grid">
+    <label class="field">
+      <span class="label">Titel</span>
+      <input type="text" name="title" required value="{{ recipe.title }}" />
+    </label>
+    <label class="field">
+      <span class="label">Beskrivning</span>
+      <input type="text" name="description" value="{{ recipe.description or '' }}" />
+    </label>
+    <label class="field">
+      <span class="label">Antal portioner</span>
+      <input type="number" min="1" step="1" name="servings" value="{{ recipe.servings or '' }}" />
+    </label>
+    <label class="field">
+      <span class="label">Bild-URL (valfri)</span>
+      <input type="url" name="image_url" value="{{ recipe.image_url or '' }}" />
+    </label>
+    <label class="field">
+      <span class="label">Ladda upp ny bild</span>
+      <input type="file" name="image_file" accept="image/*" />
+      <small class="muted">Om både URL och uppladdning anges används den uppladdade.</small>
+    </label>
+    <label class="field full">
+      <span class="label">Ingredienser (en per rad)</span>
+      <textarea name="ingredients_text" rows="6">{% for item in recipe.ingredients %}{{ (item.amount or '') ~ (' ' if item.amount else '') ~ item.name }}{% if not loop.last %}{{ '\n' }}{% endif %}{% endfor %}</textarea>
+      <small class="muted">Format: mängd + namn på samma rad. Mängd är valfri.</small>
+    </label>
+    <label class="field full">
+      <span class="label">Steg (en per rad)</span>
+      <textarea name="steps_text" rows="6">{% for step in recipe.steps %}{{ step }}{% if not loop.last %}{{ '\n' }}{% endif %}{% endfor %}</textarea>
+    </label>
+    <label class="field">
+      <span class="label">Taggar (kommaseparerade)</span>
+      <input type="text" name="tags_text" value="{{ recipe.tags | join(', ') }}" />
+    </label>
+  </div>
+  <div class="form-actions">
+    <a class="btn ghost" href="/recipes/{{ recipe.id }}?profile_id={{ current_profile.id if current_profile else '' }}">Visa</a>
+    <button class="btn primary" type="submit">Spara ändringar</button>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h2>Måttenheter</h2>
+    <p class="muted">Visa och planera ändringar av enheter och måttsatsangivelser.</p>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <a class="btn ghost" href="/admin?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+</div>
+
+<div class="card">
+  <p class="muted">Enheterna är definierade i koden (models/units.py). Här kan du se vilka som är tillgängliga och om de kan summeras. Vill du ändra dem framöver kan vi lägga till formulär som sparar mot databasen.</p>
+</div>
+
+<div class="grid two">
+  {% for cat, label in categories %}
+    <section class="card">
+      <div class="section-header">
+        <h3>{{ label }}</h3>
+        <span class="muted small">{{ cat }}</span>
+      </div>
+      <ul class="pill-list">
+        {% for unit in units if unit.category == cat %}
+          <li>
+            <span class="pill">{{ unit.code }}</span>
+            <div>
+              <strong>{{ unit.name }}</strong>
+              <p class="muted small">Plural: {{ unit.plural }}{% if not unit.summable %} · Ej summerbar{% endif %}</p>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endfor %}
+</div>
+{% endblock %}

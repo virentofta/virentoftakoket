@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Planering</p>
+    <h2>Veckomeny – vecka {{ current_week }} ({{ current_year }})</h2>
+    <p class="muted">Överblick över dagarna.</p>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+    {% if responsible %}
+      <p class="muted small">Veckans ansvariga: {{ responsible.name }}</p>
+    {% endif %}
+  </div>
+  <div class="action-row">
+    <a class="btn ghost" href="/menu?profile_id={{ current_profile.id if current_profile else '' }}&week_number={{ prev_week }}&year={{ prev_year }}">Föregående vecka</a>
+    <a class="btn ghost" href="/menu?profile_id={{ current_profile.id if current_profile else '' }}&week_number={{ next_week }}&year={{ next_year }}">Nästa vecka</a>
+    <a class="btn primary" href="/menu/new?profile_id={{ current_profile.id if current_profile else '' }}&week_number={{ current_week }}&year={{ current_year }}">Skapa ny veckomeny</a>
+  </div>
+</div>
+
+{% if menu.entries %}
+  <div class="card" style="margin-bottom: var(--space);">
+    <form class="action-row" method="post" action="/menu/responsible">
+      <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+      <input type="hidden" name="week_number" value="{{ menu.week_number or '' }}" />
+      <input type="hidden" name="year" value="{{ current_year or '' }}" />
+      <label class="field" style="display:flex;align-items:center;gap:8px;">
+        <span class="label">Veckans ansvariga</span>
+        <select name="responsible_profile_id">
+          <option value="">Ingen</option>
+          {% for p in profiles %}
+            <option value="{{ p.id }}" {% if responsible and p.id == responsible.id %}selected{% endif %}>{{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button class="btn ghost" type="submit">Spara</button>
+    </form>
+  </div>
+
+  <div class="card" style="margin-bottom: var(--space);">
+    <form class="action-row" method="post" action="/menu/shopping">
+      <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+      <input type="hidden" name="week_number" value="{{ menu.week_number or '' }}" />
+      <input type="hidden" name="year" value="{{ current_year or '' }}" />
+      <button class="btn primary" type="submit" {% if not menu.entries %}disabled{% endif %}>Skapa inköpslista</button>
+    </form>
+  </div>
+
+  <form id="reorder-form" method="post" action="/menu/reorder">
+    <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+    <input type="hidden" name="week_number" value="{{ menu.week_number or '' }}" />
+    <input type="hidden" name="year" value="{{ current_year or '' }}" />
+    <input type="hidden" name="recipe_ids" id="reorder-ids" value="" />
+  </form>
+
+  <div class="recipe-cards">
+    {% for entry in menu.entries %}
+      <article class="card recipe-card menu-card" draggable="true" data-recipe-id="{{ entry.recipe_id or '' }}">
+        {% if entry.recipe_id %}
+          <form class="card-remove" method="post" action="/menu/remove">
+            <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+            <input type="hidden" name="week_number" value="{{ menu.week_number or '' }}" />
+            <input type="hidden" name="year" value="{{ current_year or '' }}" />
+            <input type="hidden" name="day" value="{{ entry.day }}" />
+            <button type="submit" aria-label="Ta bort recept" title="Ta bort recept">–</button>
+          </form>
+        {% endif %}
+        <p class="muted">{{ entry.day }}</p>
+        {% set recipe = recipes_by_id.get(entry.recipe_id) if entry.recipe_id else None %}
+        {% if recipe %}
+          <a class="card-link" href="/recipes/{{ recipe.id }}?profile_id={{ current_profile.id if current_profile else '' }}">
+            <div class="card-thumb {{ 'has-image' if recipe.image_url else 'empty' }}" {% if recipe.image_url %}style="background-image: url('{{ recipe.image_url }}')" {% endif %}></div>
+            <div class="card-body">
+              <h3>{{ recipe.title }}</h3>
+            </div>
+          </a>
+        {% else %}
+          <div class="card-thumb empty"></div>
+          <div class="card-body">
+            <h3>Inte satt</h3>
+          </div>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+
+  {% if menu.entries|length < 7 %}
+    {% set used_recipe_ids = menu.entries | map(attribute='recipe_id') | select | list %}
+    {% set remaining = 7 - (menu.entries|length) %}
+    <div class="card" style="margin-top: var(--space);">
+      <h3>Fyll på tomma dagar</h3>
+      <p class="muted">Välj upp till {{ remaining }} recept att lägga till. Du kan söka bland dina recept.</p>
+      <form class="stack" method="post" action="/menu/add">
+        <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+        <input type="hidden" name="week_number" value="{{ menu.week_number or current_week }}" />
+        <input type="hidden" name="year" value="{{ menu.year or current_year }}" />
+        <label class="field">
+          <span class="label">Sök recept</span>
+          <input type="search" id="menu-add-search" placeholder="Börja skriva för att filtrera..." />
+        </label>
+        <div class="recipe-cards" id="menu-add-grid">
+          {% for recipe in recipes %}
+            {% if recipe.id not in used_recipe_ids %}
+              <article class="card recipe-card menu-add-card" data-title="{{ recipe.title | lower }}">
+                <label class="card-select">
+                  <input type="checkbox" name="recipe_ids" value="{{ recipe.id }}" />
+                  <span></span>
+                </label>
+                <a class="card-link" href="/recipes/{{ recipe.id }}?profile_id={{ current_profile.id if current_profile else '' }}">
+                  <div class="card-thumb {{ 'has-image' if recipe.image_url else 'empty' }}" {% if recipe.image_url %}style="background-image: url('{{ recipe.image_url }}')" {% endif %}></div>
+                  <div class="card-body">
+                    <h3>{{ recipe.title }}</h3>
+                  </div>
+                </a>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <button class="btn primary" type="submit">Lägg till valda</button>
+      </form>
+    </div>
+  {% endif %}
+
+  {% if shopping_list.items %}
+    <div class="page-header" style="margin-top: var(--space);">
+      <div id="shopping">
+        <p class="eyebrow">Inköpslista</p>
+        <h2>Från veckomenyn</h2>
+      </div>
+    </div>
+    <div class="card">
+      <ul class="pill-list">
+        {% for item in shopping_list.items %}
+          <li>
+            <span class="pill">{{ item.ingredient.amount or '' }}</span>
+            <span>{{ item.ingredient.name }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="card">
+    <h3>Ingen meny för vecka {{ current_week }} ({{ current_year }})</h3>
+    <p class="muted">Skapa en ny veckomeny för att börja planera.</p>
+    <a class="btn primary" href="/menu/new?profile_id={{ current_profile.id if current_profile else '' }}&week_number={{ current_week }}&year={{ current_year }}">Skapa ny veckomeny</a>
+  </div>
+{% endif %}
+{% endblock %}

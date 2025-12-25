@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h2>Adminpanel</h2>
+    <p class="muted">Genvägar till adminfunktioner.</p>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+</div>
+
+<section class="card-grid">
+  <a class="card app-card" href="/admin/recipes?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">🔎</div>
+    <div>
+      <h3>Hitta recept</h3>
+      <p>Sök och redigera befintliga recept.</p>
+    </div>
+  </a>
+  <a class="card app-card" href="/admin/profiles?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">👤</div>
+    <div>
+      <h3>Profiler</h3>
+      <p>Hantera och skapa profiler.</p>
+    </div>
+  </a>
+  <a class="card app-card" href="/admin/import?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">⬆️</div>
+    <div>
+      <h3>Importera recept</h3>
+      <p>Ladda upp JSON enligt importformatet.</p>
+    </div>
+  </a>
+  <a class="card app-card" href="/admin/units?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">⚖️</div>
+    <div>
+      <h3>Måttenheter</h3>
+      <p>Visa och redigera köksmått och måttsatsangivelser.</p>
+    </div>
+  </a>
+  <a class="card app-card" href="/admin/profile-settings?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">✨</div>
+    <div>
+      <h3>Profilinställningar</h3>
+      <p>Välj tema (dark/light) och andra profilpreferenser.</p>
+    </div>
+  </a>
+  <a class="card app-card" href="/admin/db?profile_id={{ current_profile.id if current_profile else 1 }}">
+    <div class="card-icon" aria-hidden="true">🗂️</div>
+    <div>
+      <h3>DB-inspektion</h3>
+      <p>Visa poster och radera manuellt.</p>
+    </div>
+  </a>
+</section>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Nytt recept</p>
+    <h2>Skapa recept</h2>
+    {% if current_profile %}
+      <p class="muted small">Aktiv profil: {{ current_profile.name }}</p>
+    {% endif %}
+  </div>
+  <a class="btn ghost" href="/recipes?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+</div>
+
+<form class="card recipe-form" method="post" action="/recipes/new" enctype="multipart/form-data">
+  <input type="hidden" name="profile_id" value="{{ current_profile.id if current_profile else '' }}" />
+  <div class="form-grid">
+    <label class="field">
+      <span class="label">Titel</span>
+      <input type="text" name="title" required placeholder="Tex. Krämig svamppasta" />
+    </label>
+    <label class="field">
+      <span class="label">Beskrivning</span>
+      <input type="text" name="description" placeholder="Kort intro till receptet" />
+    </label>
+    <label class="field">
+      <span class="label">Antal portioner</span>
+      <input type="number" min="1" step="1" name="servings" placeholder="4" />
+    </label>
+    <label class="field">
+      <span class="label">Bild-URL (valfri)</span>
+      <input type="url" name="image_url" placeholder="https://..." />
+    </label>
+    <label class="field">
+      <span class="label">Ladda upp bild</span>
+      <input type="file" name="image_file" accept="image/*" />
+    </label>
+    <label class="field full">
+      <span class="label">Ingredienser (en per rad)</span>
+      <textarea name="ingredients_text" rows="6" placeholder="2 st schalottenlök&#10;300 g svamp&#10;2 dl grädde"></textarea>
+      <small class="muted">Format: mängd + namn på samma rad. Mängd är valfri.</small>
+    </label>
+    <label class="field full">
+      <span class="label">Steg (en per rad)</span>
+      <textarea name="steps_text" rows="6" placeholder="Fräs lök i smör&#10;Tillsätt svamp och stek&#10;Häll på grädde och sjud"></textarea>
+    </label>
+    <label class="field">
+      <span class="label">Taggar (kommaseparerade)</span>
+      <input type="text" name="tags_text" placeholder="pasta, vardag, vegetarisk" />
+    </label>
+  </div>
+  <div class="form-actions">
+    <button class="btn ghost" type="reset">Rensa</button>
+    <button class="btn primary" type="submit">Spara</button>
+  </div>
+</form>
+{% endblock %}

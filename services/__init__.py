@@ -1,0 +1,1 @@
+"""Affärslogik för receptappen."""

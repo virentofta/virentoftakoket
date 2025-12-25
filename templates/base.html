@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+{% set theme = current_profile.theme_preference if current_profile and current_profile.theme_preference and current_profile.theme_preference != 'auto' else '' %}
+<html lang="sv" {% if theme %}data-theme="{{ theme }}"{% endif %}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title or "Virentoftakoket" }}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', path='favicon.png') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" />
+</head>
+<body {% if current_profile and current_profile.theme_preference and current_profile.theme_preference != 'auto' %}data-theme="{{ current_profile.theme_preference }}"{% endif %}>
+  {% set profile_qs = '' %}
+  {% if request and request.query_params.get('profile_id') %}
+    {% set profile_qs = '?profile_id=' ~ request.query_params.get('profile_id') %}
+  {% endif %}
+  <div class="page">
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a href="/{{ profile_qs }}" class="brand">
+          <span class="brand-logo">
+            <img src="{{ url_for('static', path='logo.png') }}" alt="Virentoftakoket logo" />
+          </span>
+          <span class="brand-text">Virentoftakoket</span>
+        </a>
+        {% if current_profile and profiles %}
+          <div class="top-profile profile-toggle" data-open="false">
+            <button class="profile-button" type="button" aria-haspopup="true" aria-expanded="false">
+              <span class="top-profile-dot"></span>
+              <span class="top-profile-name">{{ current_profile.name }}</span>
+              <span class="profile-caret">▾</span>
+            </button>
+            <div class="profile-menu">
+              {% for p in profiles %}
+                <a href="/?profile_id={{ p.id }}" class="profile-menu-item">{{ p.name }}</a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        <button class="menu-toggle" aria-label="Växla meny" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="main-nav">
+          <a href="/{{ profile_qs }}">Hem</a>
+          <a href="/recipes{{ profile_qs }}">Recept</a>
+          <a href="/menu{{ profile_qs }}">Veckomeny</a>
+          <a href="/menu{{ profile_qs }}#shopping">Inköpslista</a>
+          <a href="/admin{{ profile_qs }}">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page-content">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <small>Lokal receptapp – bygg vidare här.</small>
+      </div>
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', path='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Recept</p>
+    <h2>{{ recipe.title }}</h2>
+    <p class="muted">{{ recipe.description }}</p>
+    {% if recipe.servings %}
+      <p class="muted small">Portioner: {{ recipe.servings }}</p>
+    {% endif %}
+    <div class="chip-row compact">
+      {% for tag in recipe.tags %}
+        <span class="chip soft">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="action-row">
+    <a class="btn ghost" href="/recipes?profile_id={{ current_profile.id if current_profile else '' }}">Tillbaka</a>
+    <a class="btn primary" href="/admin/edit?recipe_id={{ recipe.id }}&profile_id={{ current_profile.id if current_profile else '' }}">Redigera</a>
+  </div>
+</div>
+
+<div class="grid two stretch">
+  <section class="card">
+    <div class="section-header">
+      <h3>Bild</h3>
+    </div>
+    <div class="card-thumb {{ 'has-image' if recipe.image_url else 'empty' }}" {% if recipe.image_url %}style="background-image: url('{{ recipe.image_url }}')" {% endif %}></div>
+  </section>
+
+  <section class="card">
+    <div class="section-header">
+      <h3>Ingredienser</h3>
+      <div class="servings-control" data-base-servings="{{ recipe.servings or 1 }}">
+        <label class="label" for="servings-input">Portioner</label>
+        <select id="servings-input" class="servings-select" aria-label="Antal portioner">
+          {% for n in range(1, 13) %}
+            <option value="{{ n }}" {% if (recipe.servings or 1) == n %}selected{% endif %}>{{ n }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <ul class="ingredient-list">
+      {% for item in recipe.ingredients %}
+        <li class="ingredient-row" data-raw-amount="{{ item.amount or '' }}">
+          <span class="ingredient-amount">
+            <span class="amount-value">{{ item.amount or '' }}</span>
+          </span>
+          <span class="ingredient-unit"></span>
+          <span class="ingredient-name">{{ item.name }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="card">
+    <h3>Steg</h3>
+    <ol class="steps">
+      {% for step in recipe.steps %}
+        <li>{{ step }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+</div>
+{% endblock %}

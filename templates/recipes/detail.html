@@ -35,7 +35,7 @@
       <div class="servings-control" data-base-servings="{{ recipe.servings or 1 }}">
         <label class="label" for="servings-input">Portioner</label>
         <select id="servings-input" class="servings-select" aria-label="Antal portioner">
-          {% for n in range(1, 13) %}
+          {% for n in range(1, 21) %}
             <option value="{{ n }}" {% if (recipe.servings or 1) == n %}selected{% endif %}>{{ n }}</option>
           {% endfor %}
         </select>
